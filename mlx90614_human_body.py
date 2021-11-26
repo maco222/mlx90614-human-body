@@ -1,14 +1,15 @@
 import board
 import adafruit_mlx90614
 
+
 class MLX90614HumanBody:
     A_FACTOR = 0.001081
     B_FACTOR = -0.2318
     C_FACTOR = 12.454
 
-    def __init__(self):
+    def __init__(self, address=0x5A):
         self._i2c = board.I2C()
-        self._mlx90614 = adafruit_mlx90614.MLX90614(self._i2c)
+        self._mlx90614 = adafruit_mlx90614.MLX90614(self._i2c, address)
 
     @property
     def ambient_temperature(self):
@@ -29,9 +30,8 @@ class MLX90614HumanBody:
         otF = self.object_temperature * 1.8 + 32
 
         # estimated core body temperature
-        ctF = (self.A_FACTOR*otF*otF + self.B_FACTOR*otF + self.C_FACTOR) * (otF-atF) + otF
+        ctF = (self.A_FACTOR*otF*otF + self.B_FACTOR *
+               otF + self.C_FACTOR) * (otF-atF) + otF
 
         # return temperature in Celsius
         return (ctF - 32) * 0.5556
-
-        
